@@ -11,7 +11,7 @@
 <script lang="ts">
 	import type { IContactUsMessage } from '$api/contact/types';
 
-	import { contactUsValidator } from '$api/contact/validator';
+	import { contactUsValidator, discordRequestValidator } from '$api/contact/validator';
 	import { page } from '$app/state';
 	import ValidatedInput from '$components/form/ValidatedInput.svelte';
 	import ValidatedSelect from '$components/form/ValidatedSelect.svelte';
@@ -47,6 +47,9 @@
 	let type = $state(page.url.searchParams.get('type') || '');
 	let email = $state('');
 	let message = $state('');
+
+	// Discord requests need an email to reply with the invite, even when picked from the category list
+	let isEmailRequired = $derived(emailRequired || type === 'discord');
 
 	async function onsubmit(e: Event) {
 		e.preventDefault();
@@ -114,8 +117,8 @@
 			id="email"
 			label="Email"
 			bind:value={email}
-			visuallyRequired={emailRequired}
-			validatorObject={validator}
+			visuallyRequired={isEmailRequired}
+			validatorObject={isEmailRequired ? discordRequestValidator : validator}
 			inputProps={{ type: 'email', placeholder: 'name@email.com' }}
 		/>
 	</div>
