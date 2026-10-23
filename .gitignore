@@ -20,3 +20,6 @@ Thumbs.db
 # Vite
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
+
+# Local dev database (pnpm dev:db)
+/.dev-db

@@ -67,6 +67,24 @@ Install the libraries with pnpm:
 pnpm install
 ```
 
+### Local database (no setup)
+
+To try the site without a MongoDB account, run a local database filled with sample data (bell schedules, bulletin notes, clubs and links). It needs no install, and the data is kept in `.dev-db/` between runs.
+
+In one terminal:
+
+```shell
+pnpm dev:db
+```
+
+In another, with `MONGO_DB_URI=mongodb://localhost:27017/` in `.env` (the [`.env.example`](/.env.example) default):
+
+```shell
+pnpm dev
+```
+
+`pnpm dev:db` also prints a session token for a local "Dev Owner" account. To use the admin panel without setting up Google sign-in, open http://localhost:5173, add a cookie named `session` with that token (DevTools > Application > Cookies), then go to `/admin/panel`. Run `pnpm dev:db --reset` to wipe the data and start over.
+
 ### Commands
 
 Start the development server:
