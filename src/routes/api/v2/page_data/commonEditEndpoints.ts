@@ -60,7 +60,10 @@ export const editRootEndpoints: EndpointsType<{}> = (type, model, validator) => 
 					.select('order')
 					.limit(1)
 					.exec();
-				doc.set('order', highestOrderDoc.length > 0 ? highestOrderDoc[0].get('order') || 0 + 1 : 0);
+				doc.set(
+					'order',
+					highestOrderDoc.length > 0 ? (highestOrderDoc[0].get('order') ?? -1) + 1 : 0
+				);
 			}
 
 			await doc.save();
