@@ -23,7 +23,9 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 		const orderBy = await orderByValidator.validate(url.searchParams.get('orderBy'));
 		const order = await orderValidator.validate(url.searchParams.get('order'));
 
-		const totalCount = await User.countDocuments().exec();
+		const totalCount = await User.countDocuments(
+			search ? { $text: { $search: search } } : {}
+		).exec();
 		const userQuery = User.find()
 			.sort({ [orderBy]: order })
 			.select('+firstLogin +lastLogin');
