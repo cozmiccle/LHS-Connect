@@ -8,11 +8,12 @@ export const load = (async ({ params }) => {
 		return error(404, 'Not Found');
 	}
 
-	const link = await ShortLink.findOne({ suffix: params.link }).select('url uses').exec();
+	// Count the visit atomically, and await it so it isn't dropped when the serverless function exits
+	const link = await ShortLink.findOneAndUpdate({ suffix: params.link }, { $inc: { uses: 1 } })
+		.select('url')
+		.exec();
 	if (!link) return error(404, 'Not Found');
 
-	link.uses += 1;
-	link.save();
-
-	return redirect(301, link.url);
+	// 302 rather than 301, so browsers don't cache the destination and edits to the link take effect
+	return redirect(302, link.url);
 }) satisfies PageServerLoad;
