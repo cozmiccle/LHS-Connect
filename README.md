@@ -57,8 +57,8 @@
 Download and navigate to the repo:
 
 ```shell
-git clone https://github.com/1withspaghetti/LHS-Connect-Svelte
-cd LHS-Connect-Svelte
+git clone https://github.com/ChainLynxRobotics/LHS-Connect
+cd LHS-Connect
 ```
 
 Install the libraries with pnpm:

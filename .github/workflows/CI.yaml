@@ -1,5 +1,9 @@
 name: CI
-on: [merge_group, pull_request]
+on:
+  push:
+    branches: [main]
+  pull_request:
+  merge_group:
 jobs:
   Lint-and-type-check:
     runs-on: ubuntu-latest
