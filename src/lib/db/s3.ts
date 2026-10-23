@@ -18,6 +18,9 @@ export const s3client = new S3Client({
 	responseChecksumValidation: 'WHEN_REQUIRED',
 });
 
+// How long uploaded files stay available, also used as the lifetime of their signed URLs
+export const FILE_LIFETIME_MS = 15 * 60 * 1000; // 15 minutes
+
 export function startFileClearInterval() {
 	setInterval(clearFiles, 60 * 1000); // Every minute
 	console.log('File clear interval started');
@@ -25,7 +28,7 @@ export function startFileClearInterval() {
 
 export async function clearFiles() {
 	const files = await UploadedFile.find({
-		uploadedAt: { $lt: new Date(Date.now() - 15 * 60 * 1000) }, // 15 minutes
+		uploadedAt: { $lt: new Date(Date.now() - FILE_LIFETIME_MS) },
 	});
 
 	const promises = files.map(async (file) => {

@@ -8,7 +8,7 @@ import { UploadedFile } from '$api/file_transfer/model';
 import { ValidationError } from 'yup';
 import { error, json } from '@sveltejs/kit';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
-import { clearFiles, s3client } from '$lib/db/s3';
+import { clearFiles, FILE_LIFETIME_MS, s3client } from '$lib/db/s3';
 import { GetObjectCommand, PutObjectCommand } from '@aws-sdk/client-s3';
 import { S3_BUCKET_NAME } from '$env/static/private';
 
@@ -18,7 +18,11 @@ export const GET: RequestHandler = async ({ params }) => {
 	try {
 		const code = await fileTransferCodeValidator.validate(params.code);
 
-		const files = await UploadedFile.find({ code });
+		// In production, expired files are only cleaned up on the next upload, so hide them here
+		const files = await UploadedFile.find({
+			code,
+			uploadedAt: { $gte: new Date(Date.now() - FILE_LIFETIME_MS) },
+		});
 
 		return json({ results: files.map((file) => file.toObject()) });
 	} catch (e) {
@@ -50,7 +54,7 @@ export const POST: RequestHandler = async ({ params, request }) => {
 				ContentLength: file.size,
 			}),
 			{
-				expiresIn: 15 * 60, // 15 minutes
+				expiresIn: FILE_LIFETIME_MS / 1000,
 			}
 		);
 		const downloadUrl = await getSignedUrl(
@@ -60,7 +64,7 @@ export const POST: RequestHandler = async ({ params, request }) => {
 				Key: fileKey,
 			}),
 			{
-				expiresIn: 15 * 60, // 15 minutes
+				expiresIn: FILE_LIFETIME_MS / 1000,
 			}
 		);
 
