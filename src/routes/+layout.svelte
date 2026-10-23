@@ -15,7 +15,7 @@
 
 	$effect(() => {
 		if ($theme !== undefined) {
-			localStorage.setItem('theme', $theme);
+			// Saving happens in ThemeSwitch, so the detected system theme isn't stored as a choice
 			if ($theme === 'dark') {
 				document.documentElement.classList.add('dark');
 			} else {
